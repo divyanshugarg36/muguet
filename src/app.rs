@@ -163,10 +163,14 @@ impl ApplicationHandler for App {
         #[cfg(target_os = "ios")]
         if crate::touch::refresh() { wait = 15; }
         #[cfg(target_os = "ios")]
+        if crate::keyboard::poll() { wait = wait.min(8); }
+        #[cfg(target_os = "ios")]
         if !self.started {
             self.launcher();
             wait = 50;
         }
+        #[cfg(target_os = "ios")]
+        if self.started && self.window.as_deref().is_some_and(crate::mouse::poll) { wait = wait.min(8); }
         el.set_control_flow(ControlFlow::WaitUntil(std::time::Instant::now() + std::time::Duration::from_millis(wait)));
     }
 
